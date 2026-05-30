@@ -1,50 +1,201 @@
-import { ThemeToggle } from '@/components/theme-toggle';
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { ArrowRight, Check, Quote, Sparkles } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { env } from '@/lib/env';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { SiteHeader } from '@/components/landing/site-header';
+import { HeroPreview } from '@/components/landing/hero-preview';
+import {
+  FEATURES,
+  FINAL_CTA,
+  HERO,
+  PRODUCT,
+  STATS,
+  STEPS,
+  TESTIMONIAL,
+} from '@/lib/landing/content';
+
+export const metadata: Metadata = {
+  title: `${PRODUCT.name} · ${PRODUCT.tagline}`,
+  description: HERO.subtitle,
+};
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="border-border flex items-center justify-between border-b px-6 py-4">
-        <span className="text-sm font-semibold tracking-tight">
-          {env.NEXT_PUBLIC_APP_NAME}
-        </span>
-        <ThemeToggle />
-      </header>
+    <div className="flex min-h-svh flex-col">
+      <SiteHeader />
 
-      <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-start justify-center gap-6 px-6 py-16">
-        <h1 className="text-balance text-4xl font-semibold tracking-tight sm:text-5xl">
-          Listo para hackear.
-        </h1>
-        <p className="text-muted-foreground max-w-prose text-pretty">
-          Boilerplate frontend con Next.js 16, Tailwind v4, shadcn/ui, TanStack
-          Query, react-hook-form y Zod. Edit{' '}
-          <code className="bg-muted rounded px-1.5 py-0.5 text-sm">
-            src/app/page.tsx
-          </code>{' '}
-          y empezá a maquetar.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <Button asChild>
-            <a
-              href="https://ui.shadcn.com/docs/components"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Componentes shadcn
-            </a>
-          </Button>
-          <Button variant="outline" asChild>
-            <a
-              href="https://tanstack.com/query/latest/docs/framework/react/overview"
-              target="_blank"
-              rel="noreferrer"
-            >
-              TanStack Query
-            </a>
-          </Button>
-        </div>
+      <main className="flex-1">
+        {/* Hero */}
+        <section className="mx-auto grid w-full max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-24">
+          <div className="flex flex-col items-start gap-6">
+            <Badge variant="secondary" className="gap-1.5 py-1">
+              <Sparkles className="size-3.5" />
+              {HERO.badge}
+            </Badge>
+            <h1 className="text-balance text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
+              {HERO.title}{' '}
+              <span className="text-primary">{HERO.highlight}</span>
+            </h1>
+            <p className="max-w-prose text-pretty text-lg text-muted-foreground">
+              {HERO.subtitle}
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Button asChild size="lg">
+                <Link href="/dashboard">
+                  {HERO.primaryCta}
+                  <ArrowRight className="size-4" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <a href="#how">{HERO.secondaryCta}</a>
+              </Button>
+            </div>
+            <ul className="flex flex-wrap gap-x-5 gap-y-2 pt-2">
+              {HERO.trust.map((item) => (
+                <li
+                  key={item}
+                  className="flex items-center gap-1.5 text-sm text-muted-foreground"
+                >
+                  <Check className="size-4 text-emerald-600 dark:text-emerald-400" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <HeroPreview />
+        </section>
+
+        {/* Stats */}
+        <section className="border-y border-border/60 bg-muted/30">
+          <dl className="mx-auto grid w-full max-w-6xl grid-cols-2 gap-8 px-4 py-12 sm:px-6 md:grid-cols-4">
+            {STATS.map((stat) => (
+              <div key={stat.label} className="flex flex-col gap-1">
+                <dt className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+                  {stat.value}
+                </dt>
+                <dd className="text-sm text-muted-foreground">{stat.label}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        {/* Features */}
+        <section id="features" className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
+          <div className="mx-auto mb-12 max-w-2xl text-center">
+            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+              De la planilla a la acción
+            </h2>
+            <p className="mt-3 text-muted-foreground">
+              Todo lo que necesita una PyME para encontrar y aprovechar
+              oportunidades de mejora, sin equipo de datos.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {FEATURES.map((feature) => (
+              <Card key={feature.title} className="gap-3">
+                <CardHeader className="gap-3">
+                  <span className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <feature.icon className="size-5" />
+                  </span>
+                  <CardTitle className="text-base">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    {feature.description}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        {/* How it works */}
+        <section id="how" className="border-t border-border/60 bg-muted/30">
+          <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
+            <div className="mx-auto mb-12 max-w-2xl text-center">
+              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+                Tres pasos. Cero fricción.
+              </h2>
+              <p className="mt-3 text-muted-foreground">
+                Sin instalaciones ni migraciones. Funciona con los archivos que
+                ya usás todos los días.
+              </p>
+            </div>
+            <ol className="grid gap-6 md:grid-cols-3">
+              {STEPS.map((step, i) => (
+                <li
+                  key={step.title}
+                  className="relative flex flex-col gap-3 rounded-xl border bg-card p-6"
+                >
+                  <span className="flex size-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+                    {i + 1}
+                  </span>
+                  <step.icon className="size-6 text-primary" />
+                  <h3 className="font-semibold">{step.title}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {step.description}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        {/* Testimonial */}
+        <section className="mx-auto w-full max-w-3xl px-4 py-20 sm:px-6">
+          <Card className="items-center text-center">
+            <CardHeader className="items-center gap-4">
+              <Quote className="size-8 text-primary/40" />
+              <CardTitle className="text-balance text-xl font-medium leading-relaxed sm:text-2xl">
+                “{TESTIMONIAL.quote}”
+              </CardTitle>
+              <CardDescription className="text-base">
+                <span className="font-medium text-foreground">
+                  {TESTIMONIAL.author}
+                </span>{' '}
+                · {TESTIMONIAL.role}, {TESTIMONIAL.company}
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </section>
+
+        {/* Final CTA */}
+        <section className="mx-auto w-full max-w-6xl px-4 pb-24 sm:px-6">
+          <div className="relative overflow-hidden rounded-2xl border bg-linear-to-br from-primary/10 via-card to-emerald-500/10 px-6 py-14 text-center sm:px-12">
+            <h2 className="mx-auto max-w-2xl text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
+              {FINAL_CTA.title}
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
+              {FINAL_CTA.subtitle}
+            </p>
+            <Button asChild size="lg" className="mt-8">
+              <Link href="/dashboard">
+                {FINAL_CTA.cta}
+                <ArrowRight className="size-4" />
+              </Link>
+            </Button>
+          </div>
+        </section>
       </main>
+
+      <footer className="border-t border-border/60">
+        <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-2 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:px-6">
+          <span>
+            © {PRODUCT.name} · {PRODUCT.tagline}
+          </span>
+          <span>Datos de demostración · producto de ejemplo</span>
+        </div>
+      </footer>
     </div>
   );
 }
