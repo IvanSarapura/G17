@@ -1,7 +1,11 @@
 import { env } from '@/lib/env';
 import { ApiError } from '@/lib/api/client';
 import { getMockAnalysis } from './mock';
-import { AnalysisResultSchema, type AnalysisResult } from './types';
+import {
+  AnalysisResultSchema,
+  type AnalysisContext,
+  type AnalysisResult,
+} from './types';
 
 export const ACCEPTED_EXTENSIONS = ['.xlsx', '.xls', '.csv'] as const;
 export const ACCEPT_ATTR = ACCEPTED_EXTENSIONS.join(',');
@@ -13,13 +17,19 @@ export function isAcceptedFile(fileName: string): boolean {
 }
 
 /**
- * FASE 3 — Análisis real: sube el Excel al backend de IA y valida la respuesta
- * contra el contrato. Usa `fetch` con `FormData` directamente porque `apiClient`
- * fuerza `Content-Type: application/json`, lo que rompe el multipart.
+ * FASE 3 — Análisis real: sube el Excel + el contexto del asistente al backend
+ * de IA y valida la respuesta contra el contrato. Usa `fetch` con `FormData`
+ * directamente porque `apiClient` fuerza `Content-Type: application/json`, lo que
+ * rompe el multipart.
  */
-export async function uploadAnalysis(file: File): Promise<AnalysisResult> {
+export async function uploadAnalysis(
+  file: File,
+  context: AnalysisContext,
+): Promise<AnalysisResult> {
   const body = new FormData();
   body.append('file', file);
+  // Las respuestas guiadas viajan junto al archivo para orientar a la IA.
+  body.append('context', JSON.stringify(context));
 
   const res = await fetch(`${env.NEXT_PUBLIC_API_URL}/analyze`, {
     method: 'POST',
@@ -43,9 +53,13 @@ export async function uploadAnalysis(file: File): Promise<AnalysisResult> {
 
 /**
  * FASE 2 — Análisis simulado: imita la latencia del backend y devuelve el mock
- * con el nombre del archivo subido. Reemplazar por `uploadAnalysis` en Fase 3.
+ * con el nombre del archivo subido. El `context` se ignora en el mock; existe en
+ * la firma para que activar `uploadAnalysis` en Fase 3 no requiera tocar la UI.
  */
-export async function simulateAnalysis(file: File): Promise<AnalysisResult> {
+export async function simulateAnalysis(
+  file: File,
+  _context: AnalysisContext,
+): Promise<AnalysisResult> {
   await new Promise((resolve) => setTimeout(resolve, 1400));
   return getMockAnalysis(file.name);
 }

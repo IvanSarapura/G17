@@ -2,12 +2,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight, Check, Quote, Sparkles } from 'lucide-react';
 
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -29,6 +29,12 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
+  const authorInitials = TESTIMONIAL.author
+    .split(' ')
+    .map((name) => name[0])
+    .slice(0, 2)
+    .join('');
+
   return (
     <div className="flex min-h-svh flex-col">
       <SiteHeader />
@@ -50,7 +56,7 @@ export default function Home() {
             </p>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="lg">
-                <Link href="/dashboard">
+                <Link href="/analizar">
                   {HERO.primaryCta}
                   <ArrowRight className="size-4" />
                 </Link>
@@ -152,21 +158,32 @@ export default function Home() {
         </section>
 
         {/* Testimonial */}
-        <section className="mx-auto w-full max-w-3xl px-4 py-20 sm:px-6">
-          <Card className="items-center text-center">
-            <CardHeader className="items-center gap-4">
-              <Quote className="size-8 text-primary/40" />
-              <CardTitle className="text-balance text-xl font-medium leading-relaxed sm:text-2xl">
-                “{TESTIMONIAL.quote}”
-              </CardTitle>
-              <CardDescription className="text-base">
-                <span className="font-medium text-foreground">
+        <section className="px-4 py-20 sm:px-6">
+          <figure className="mx-auto flex w-full max-w-2xl flex-col items-center text-center">
+            <Quote
+              aria-hidden
+              className="size-8 text-primary/30"
+              strokeWidth={1.5}
+            />
+            <blockquote className="mt-6 text-pretty text-xl font-medium leading-relaxed text-foreground sm:text-2xl">
+              {TESTIMONIAL.quote}
+            </blockquote>
+            <figcaption className="mt-8 flex items-center gap-3">
+              <Avatar size="lg">
+                <AvatarFallback className="bg-primary/10 font-medium text-primary">
+                  {authorInitials}
+                </AvatarFallback>
+              </Avatar>
+              <div className="text-left text-sm leading-tight">
+                <div className="font-medium text-foreground">
                   {TESTIMONIAL.author}
-                </span>{' '}
-                · {TESTIMONIAL.role}, {TESTIMONIAL.company}
-              </CardDescription>
-            </CardHeader>
-          </Card>
+                </div>
+                <div className="text-muted-foreground">
+                  {TESTIMONIAL.role}, {TESTIMONIAL.company}
+                </div>
+              </div>
+            </figcaption>
+          </figure>
         </section>
 
         {/* Final CTA */}
@@ -179,7 +196,7 @@ export default function Home() {
               {FINAL_CTA.subtitle}
             </p>
             <Button asChild size="lg" className="mt-8">
-              <Link href="/dashboard">
+              <Link href="/analizar">
                 {FINAL_CTA.cta}
                 <ArrowRight className="size-4" />
               </Link>

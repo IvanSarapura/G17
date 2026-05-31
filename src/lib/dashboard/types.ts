@@ -77,6 +77,87 @@ export const AnalysisMetaSchema = z.object({
 });
 export type AnalysisMeta = z.infer<typeof AnalysisMetaSchema>;
 
+/**
+ * Contexto que aporta el usuario en el asistente previo al dashboard.
+ *
+ * Reemplaza al "prompt en blanco": en vez de pedirle a un usuario no técnico
+ * que sepa qué escribir, capturamos respuestas guiadas y se las pasamos a la IA
+ * para orientar qué KPIs e indicadores generar. Los `enum` coinciden con los
+ * `value` de las opciones del formulario (`@/lib/intake/questions`).
+ */
+export const BusinessTypeSchema = z.enum([
+  'comercio',
+  'produccion',
+  'servicios',
+  'distribucion',
+  'otro',
+]);
+export type BusinessType = z.infer<typeof BusinessTypeSchema>;
+
+export const ObjectiveSchema = z.enum([
+  'reducir_costos',
+  'aumentar_ventas',
+  'mejorar_eficiencia',
+  'controlar_stock',
+]);
+export type Objective = z.infer<typeof ObjectiveSchema>;
+
+export const DataKindSchema = z.enum([
+  'ventas',
+  'costos',
+  'produccion',
+  'inventario',
+  'mixto',
+]);
+export type DataKind = z.infer<typeof DataKindSchema>;
+
+export const CurrencyChoiceSchema = z.enum(['ARS', 'USD', 'otra']);
+export type CurrencyChoice = z.infer<typeof CurrencyChoiceSchema>;
+
+/** Un turno de planta, con hora de inicio y fin en formato "HH:MM". */
+export const ShiftSchema = z.object({
+  start: z.string(),
+  end: z.string(),
+});
+export type Shift = z.infer<typeof ShiftSchema>;
+
+/** Un recurso material usado en producción: qué es y para qué se usa. */
+export const MaterialResourceSchema = z.object({
+  name: z.string(),
+  use: z.string(),
+});
+export type MaterialResource = z.infer<typeof MaterialResourceSchema>;
+
+/**
+ * El asistente Guiado se enfoca en producción y captura contexto de planta
+ * (turnos, productos, empleados, recursos). El modo Chat sigue usando las
+ * preguntas genéricas (`businessType/objective/currency`), por eso todos los
+ * campos son opcionales: cada modo completa el subconjunto que le corresponde.
+ */
+export const AnalysisContextSchema = z.object({
+  // Producción (modo Guiado · paso Turnos)
+  shifts: z.array(ShiftSchema).optional(),
+  // Producción (modo Guiado · paso Contexto)
+  products: z.string().max(300).optional(),
+  employees: z.number().int().nonnegative().optional(),
+  resources: z.array(MaterialResourceSchema).optional(),
+  processes: z.array(z.string()).optional(),
+  // Compartido (Guiado + Chat)
+  dataKind: DataKindSchema.optional(),
+  /** Card de texto opcional del paso "¿Qué contiene tu planilla?". */
+  dataKindNotes: z.string().max(500).optional(),
+  // Solo modo Chat (se mantienen por compatibilidad).
+  businessType: BusinessTypeSchema.optional(),
+  objective: ObjectiveSchema.optional(),
+  currency: CurrencyChoiceSchema.optional(),
+  /** Texto libre opcional: la "opción a chat" para contar algo puntual. */
+  notes: z.string().max(500).optional(),
+});
+export type AnalysisContext = z.infer<typeof AnalysisContextSchema>;
+
+/** Pedido de análisis en el borde de la llamada (el File no es serializable). */
+export type AnalysisRequest = { file: File; context: AnalysisContext };
+
 /** Resultado completo del análisis: lo que pinta el dashboard. */
 export const AnalysisResultSchema = z.object({
   /** Exactamente 2 KPIs en esta iteración. */

@@ -1,7 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { CalendarClock, FileSpreadsheet, Rows3 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { CalendarClock, FileSpreadsheet, Loader2, Rows3 } from 'lucide-react';
 
 import {
   Card,
@@ -11,13 +12,12 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { ThemeToggle } from '@/components/theme-toggle';
-import { env } from '@/lib/env';
+import { loadAnalysis } from '@/lib/dashboard/session';
 import type { AnalysisResult } from '@/lib/dashboard/types';
+import { DashboardNavbar } from './dashboard-navbar';
 import { InsightsPanel } from './insights-panel';
 import { MetricCard } from './metric-card';
 import { TrendChart } from './trend-chart';
-import { UploadDialog } from './upload-dialog';
 
 const ACCENTS = ['var(--chart-1)', 'var(--chart-2)'] as const;
 
@@ -26,27 +26,45 @@ const dateFmt = new Intl.DateTimeFormat('es-AR', {
   timeZone: 'UTC',
 });
 
-export function DashboardShell({ initialData }: { initialData: AnalysisResult }) {
-  const [data, setData] = React.useState(initialData);
+export function DashboardShell() {
+  const router = useRouter();
+  // El dashboard se alimenta del análisis generado en `/analizar` (guardado en
+  // sessionStorage). Sin análisis cargado, redirigimos al asistente: no hay
+  // vista de ejemplo, el flujo siempre pasa por el asistente.
+  const [data, setData] = React.useState<AnalysisResult | null>(null);
+
+  React.useEffect(() => {
+    const stored = loadAnalysis();
+    if (stored) {
+      setData(stored);
+    } else {
+      router.replace('/analizar');
+    }
+  }, [router]);
+
+  if (!data) {
+    return (
+      <div className="flex min-h-svh items-center justify-center">
+        <Loader2 className="size-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:py-8">
-      <header className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <div>
+    <>
+      <DashboardNavbar />
+
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:py-8">
+        <div className="mb-6">
           <h1 className="text-2xl font-semibold tracking-tight">
             Dashboard operativo
           </h1>
           <p className="text-sm text-muted-foreground">
-            {env.NEXT_PUBLIC_APP_NAME} · Oportunidades de mejora detectadas por IA
+            Oportunidades de mejora detectadas por IA
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-          <UploadDialog onAnalyzed={setData} />
-        </div>
-      </header>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
         {data.metrics.map((metric, i) => (
           <MetricCard
             key={metric.id}
@@ -100,10 +118,11 @@ export function DashboardShell({ initialData }: { initialData: AnalysisResult })
           </CardContent>
         </Card>
 
-        <div className="md:col-span-2 xl:col-span-2">
-          <InsightsPanel insights={data.insights} />
+          <div className="md:col-span-2 xl:col-span-2">
+            <InsightsPanel insights={data.insights} />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

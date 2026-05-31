@@ -24,7 +24,7 @@ export const HERO = {
   highlight: 'decisiones que ahorran plata',
   subtitle:
     'Subí tus planillas de ventas, costos o producción y dejá que la IA encuentre las fugas de eficiencia. Recibí oportunidades de mejora priorizadas por impacto, en minutos.',
-  primaryCta: 'Ver el dashboard de ejemplo',
+  primaryCta: 'Analizá tu Excel',
   secondaryCta: 'Cómo funciona',
   trust: ['Sin tarjeta de crédito', 'Resultados en 5 minutos', 'Tus datos no se comparten'],
 } as const;

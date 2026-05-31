@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 
 import { DashboardShell } from '@/components/dashboard/dashboard-shell';
-import { getMockAnalysis } from '@/lib/dashboard/mock';
 
 export const metadata: Metadata = {
   title: 'Dashboard operativo',
@@ -10,13 +9,11 @@ export const metadata: Metadata = {
 };
 
 export default function DashboardPage() {
-  // Fase 1/2: datos simulados. En Fase 3 esto se reemplaza por la respuesta
-  // real del análisis (mismo contrato AnalysisResult).
-  const analysis = getMockAnalysis();
-
+  // El análisis se genera en `/analizar` y viaja por sessionStorage; el shell lo
+  // lee en el cliente y, si no hay ninguno, redirige al asistente.
   return (
     <main className="min-h-svh bg-muted/30">
-      <DashboardShell initialData={analysis} />
+      <DashboardShell />
     </main>
   );
 }
