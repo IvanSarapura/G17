@@ -101,6 +101,59 @@ export const InterpretationSchema = z.object({
 });
 export type Interpretation = z.infer<typeof InterpretationSchema>;
 
+/**
+ * Productividad de mano de obra: horas-hombre por unidad equivalente, semana a
+ * semana, contra un objetivo. Es un indicador que solo existe al cruzar el
+ * avance de producción con la asistencia (lo que el producto promete).
+ */
+export const ProductivityPointSchema = z.object({
+  week: z.string(),
+  /** Horas-hombre por unidad equivalente (menor es mejor). */
+  hhPerUnit: z.number(),
+  /** Eficiencia de la semana en % (100% = llega al objetivo). */
+  efficiency: z.number(),
+});
+export type ProductivityPoint = z.infer<typeof ProductivityPointSchema>;
+
+/** Tono de una tarjeta-resumen: bueno (verde), malo (rojo) o neutro. */
+export const StatToneSchema = z.enum(['good', 'bad', 'neutral']);
+export type StatTone = z.infer<typeof StatToneSchema>;
+
+/** Una tarjeta-resumen del bloque de productividad. */
+export const ProductivityStatSchema = z.object({
+  label: z.string(),
+  value: z.string(),
+  unit: z.string().optional(),
+  tone: StatToneSchema,
+});
+export type ProductivityStat = z.infer<typeof ProductivityStatSchema>;
+
+export const ProductivitySchema = z.object({
+  title: z.string(),
+  subtitle: z.string(),
+  /** Unidad de las barras de HH, p.ej. "hh / puerta". */
+  unitLabel: z.string(),
+  /** Objetivo de HH por unidad (línea de referencia). */
+  target: z.number(),
+  points: z.array(ProductivityPointSchema).min(2),
+  stats: z.array(ProductivityStatSchema),
+  /** Interpretación de la IA del gráfico ("Lo que muestran los datos"). */
+  insight: z.string(),
+});
+export type Productivity = z.infer<typeof ProductivitySchema>;
+
+/**
+ * Recomendación destacada de la IA: la métrica más directa para traducir el
+ * desvío operativo en dinero (con una fórmula que el dueño completa con su tarifa).
+ */
+export const RecommendationSchema = z.object({
+  title: z.string(),
+  detail: z.string(),
+  /** Fórmula simple, mostrada en texto monoespaciado. */
+  formula: z.string(),
+});
+export type Recommendation = z.infer<typeof RecommendationSchema>;
+
 /** Metadatos del análisis ejecutado. */
 export const AnalysisMetaSchema = z.object({
   /** Nombres de las planillas procesadas (una o varias). */
@@ -203,6 +256,10 @@ export const AnalysisResultSchema = z.object({
   insights: z.array(InsightSchema),
   /** Lectura de la IA de las planillas, para la pantalla de confirmación previa. */
   interpretation: InterpretationSchema,
+  /** Productividad de mano de obra (HH por unidad) cruzando las planillas. */
+  productivity: ProductivitySchema,
+  /** Recomendación destacada de la IA (métrica que traduce el desvío en plata). */
+  recommendation: RecommendationSchema.optional(),
   meta: AnalysisMetaSchema,
 });
 export type AnalysisResult = z.infer<typeof AnalysisResultSchema>;

@@ -92,6 +92,36 @@ const MOCK_ANALYSIS: AnalysisResult = {
       relatedMetric: 'eficiencia',
     },
   ],
+  productivity: {
+    title: 'Productividad de mano de obra',
+    subtitle:
+      'Horas-hombre por puerta PM-800 · Oct – Nov 2024 · 7 operarios · cruzando avance de piezas + asistencia',
+    unitLabel: 'hh / puerta',
+    target: 20,
+    points: [
+      { week: 'Sem 1', hhPerUnit: 42, efficiency: 48 },
+      { week: 'Sem 2', hhPerUnit: 32, efficiency: 63 },
+      { week: 'Sem 3', hhPerUnit: 22, efficiency: 91 },
+      { week: 'Sem 4', hhPerUnit: 27, efficiency: 75 },
+      { week: 'Sem 5', hhPerUnit: 35, efficiency: 57 },
+      { week: 'Sem 6', hhPerUnit: 38, efficiency: 53 },
+    ],
+    stats: [
+      { label: 'Objetivo', value: '20', unit: 'hh / puerta', tone: 'good' },
+      { label: 'Real promedio', value: '29', unit: 'hh / puerta', tone: 'bad' },
+      { label: 'Desvío promedio', value: '+9 hh', unit: 'sobre objetivo', tone: 'bad' },
+      { label: 'Mejor semana', value: '22', unit: 'hh / puerta — sem. 3', tone: 'good' },
+    ],
+    insight:
+      'Hacer una puerta PM-800 debería tomar 20 hh. Este período promedió 29 hh, un 45% más. La semana 3 fue la única vez que la planta estuvo cerca del objetivo; desde la semana 4 la eficiencia cae sostenidamente y la semana 6 registra 38 hh por puerta. Esa caída coincide con el aumento de rechazos en Soldado. Este número no existía antes de cruzar las dos planillas.',
+  },
+  recommendation: {
+    title: 'Costo de la hora-hombre desperdiciada',
+    detail:
+      'La métrica más directa y defendible: tomá el desvío que ya calculamos (+9 hh por puerta sobre el objetivo) y multiplicalo por el costo de una hora-hombre en tu planta. Así ves, en plata, cuánto se pierde por mes.',
+    formula:
+      '9 hh de desvío × $X por hh × puertas producidas por mes = dinero perdido por mes',
+  },
   interpretation: {
     files: [],
     entities: [

@@ -16,10 +16,7 @@ import { loadAnalysis } from '@/lib/dashboard/session';
 import type { AnalysisResult } from '@/lib/dashboard/types';
 import { DashboardNavbar } from './dashboard-navbar';
 import { InsightsPanel } from './insights-panel';
-import { MetricCard } from './metric-card';
-import { TrendChart } from './trend-chart';
-
-const ACCENTS = ['var(--chart-1)', 'var(--chart-2)'] as const;
+import { ProductivityCard } from './productivity-card';
 
 const dateFmt = new Intl.DateTimeFormat('es-AR', {
   dateStyle: 'medium',
@@ -60,74 +57,63 @@ export function DashboardShell() {
             Dashboard operativo
           </h1>
           <p className="text-sm text-muted-foreground">
-            Oportunidades de mejora detectadas por IA
+            Productividad de tu planta, leída por IA desde tus planillas
           </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
-        {data.metrics.map((metric, i) => (
-          <MetricCard
-            key={metric.id}
-            metric={metric}
-            accent={ACCENTS[i % ACCENTS.length]}
-            className="md:col-span-1 xl:col-span-2"
+        <div className="grid gap-4 lg:grid-cols-3">
+          {/* Reporte principal: productividad de mano de obra (HH por puerta) */}
+          <ProductivityCard
+            productivity={data.productivity}
+            className="lg:col-span-2"
           />
-        ))}
 
-        <Card className="justify-between md:col-span-2 xl:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Último análisis
-            </CardTitle>
-            <CardDescription>
-              {data.meta.files.length > 1
-                ? 'Resumen de las planillas procesadas'
-                : 'Resumen de la planilla procesada'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2.5 text-sm">
-            <ul className="flex flex-col gap-1.5">
-              {data.meta.files.map((name) => (
-                <li key={name} className="flex items-center gap-2">
-                  <FileSpreadsheet className="size-4 shrink-0 text-muted-foreground" />
-                  <span className="truncate font-medium">{name}</span>
-                </li>
-              ))}
-            </ul>
-            <Separator />
-            <div className="flex items-center justify-between text-muted-foreground">
-              <span className="flex items-center gap-2">
-                <Rows3 className="size-4" /> Filas procesadas
-              </span>
-              <span className="font-medium text-foreground tabular-nums">
-                {data.meta.rows.toLocaleString('es-AR')}
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-muted-foreground">
-              <span className="flex items-center gap-2">
-                <CalendarClock className="size-4" /> Fecha
-              </span>
-              <span className="font-medium text-foreground">
-                {dateFmt.format(new Date(data.meta.analyzedAt))}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+          {/* Columna derecha: resumen del análisis + recomendaciones de la IA */}
+          <div className="flex flex-col gap-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Último análisis
+                </CardTitle>
+                <CardDescription>
+                  {data.meta.files.length > 1
+                    ? 'Resumen de las planillas procesadas'
+                    : 'Resumen de la planilla procesada'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2.5 text-sm">
+                <ul className="flex flex-col gap-1.5">
+                  {data.meta.files.map((name) => (
+                    <li key={name} className="flex items-center gap-2">
+                      <FileSpreadsheet className="size-4 shrink-0 text-muted-foreground" />
+                      <span className="truncate font-medium">{name}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Separator />
+                <div className="flex items-center justify-between text-muted-foreground">
+                  <span className="flex items-center gap-2">
+                    <Rows3 className="size-4" /> Filas procesadas
+                  </span>
+                  <span className="font-medium text-foreground tabular-nums">
+                    {data.meta.rows.toLocaleString('es-AR')}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-muted-foreground">
+                  <span className="flex items-center gap-2">
+                    <CalendarClock className="size-4" /> Fecha
+                  </span>
+                  <span className="font-medium text-foreground">
+                    {dateFmt.format(new Date(data.meta.analyzedAt))}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card className="md:col-span-2 xl:col-span-4">
-          <CardHeader>
-            <CardTitle>Tendencia operativa</CardTitle>
-            <CardDescription>
-              Eficiencia vs. tiempo por pieza en las últimas semanas
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="h-[300px] sm:h-[340px]">
-            <TrendChart data={data.trend} />
-          </CardContent>
-        </Card>
-
-          <div className="md:col-span-2 xl:col-span-2">
-            <InsightsPanel insights={data.insights} />
+            <InsightsPanel
+              insights={data.insights}
+              recommendation={data.recommendation}
+            />
           </div>
         </div>
       </div>

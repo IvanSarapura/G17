@@ -1,4 +1,4 @@
-import { Lightbulb, TrendingUp } from 'lucide-react';
+import { Coins, Lightbulb, TrendingUp } from 'lucide-react';
 
 import {
   Card,
@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import type { Impact, Insight } from '@/lib/dashboard/types';
+import type { Impact, Insight, Recommendation } from '@/lib/dashboard/types';
 
 const IMPACT_STYLES: Record<Impact, string> = {
   alto: 'border-transparent bg-emerald-600/15 text-emerald-700 dark:text-emerald-400',
@@ -25,7 +25,13 @@ const IMPACT_LABEL: Record<Impact, string> = {
   bajo: 'Impacto bajo',
 };
 
-export function InsightsPanel({ insights }: { insights: Insight[] }) {
+export function InsightsPanel({
+  insights,
+  recommendation,
+}: {
+  insights: Insight[];
+  recommendation?: Recommendation;
+}) {
   const highImpact = insights.filter((i) => i.impact === 'alto').length;
 
   return (
@@ -33,7 +39,7 @@ export function InsightsPanel({ insights }: { insights: Insight[] }) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Lightbulb className="size-4 text-amber-500" />
-          Oportunidades detectadas
+          Recomendaciones de la IA
         </CardTitle>
         <CardDescription>
           Análisis de IA sobre tus datos operativos
@@ -49,6 +55,23 @@ export function InsightsPanel({ insights }: { insights: Insight[] }) {
         </div>
       </CardHeader>
       <CardContent className="px-0">
+        {recommendation ? (
+          <div className="border-b bg-emerald-600/5 px-6 py-4">
+            <p className="flex items-center gap-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+              <Coins className="size-4" />
+              Métrica para mostrar el ahorro
+            </p>
+            <h3 className="mt-2 text-sm font-semibold">
+              {recommendation.title}
+            </h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {recommendation.detail}
+            </p>
+            <pre className="mt-2.5 overflow-x-auto rounded-lg border bg-muted px-3 py-2.5 font-mono text-xs leading-relaxed whitespace-pre-wrap break-words text-foreground">
+              {recommendation.formula}
+            </pre>
+          </div>
+        ) : null}
         <ScrollArea className="h-[320px]">
           <ul className="px-6">
             {insights.map((insight, index) => (
