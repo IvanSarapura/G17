@@ -14,28 +14,32 @@ import {
  */
 
 export const PRODUCT = {
-  name: 'Optimia',
-  tagline: 'Inteligencia operativa para PyMEs',
+  name: 'lupia',
+  tagline: 'Inteligencia de producción para PyMEs',
 } as const;
 
 export const HERO = {
   badge: 'Análisis con IA · sin instalar nada',
-  title: 'Convertí tus Excel en',
-  highlight: 'decisiones que ahorran plata',
+  title: 'Convertí tus planillas en',
+  highlight: 'claridad para tu planta',
   subtitle:
-    'Subí tus planillas de ventas, costos o producción y dejá que la IA encuentre las fugas de eficiencia. Recibí oportunidades de mejora priorizadas por impacto, en minutos.',
-  primaryCta: 'Analizá tu Excel',
+    'Subí las planillas de tu producción —tal como las tenés— y dejá que la IA las ordene y te muestre dónde se traba el trabajo: cuellos de botella, retrabajos y faltas. Recibí mejoras priorizadas por impacto, en minutos.',
+  primaryCta: 'Analizá tus planillas',
   secondaryCta: 'Cómo funciona',
-  trust: ['Sin tarjeta de crédito', 'Resultados en 5 minutos', 'Tus datos no se comparten'],
+  trust: [
+    'Funciona con tus Excel tal cual',
+    'Resultados en minutos',
+    'Tus datos no se comparten',
+  ],
 } as const;
 
 export type Stat = { value: string; label: string };
 
 export const STATS: Stat[] = [
-  { value: '32%', label: 'reducción de costos detectada en promedio' },
-  { value: '+1.200', label: 'planillas analizadas' },
-  { value: '5 min', label: 'hasta tu primer análisis' },
-  { value: '4,8/5', label: 'satisfacción de las PyMEs' },
+  { value: '5 min', label: 'hasta tu primer tablero' },
+  { value: 'Cero', label: 'integraciones o migraciones' },
+  { value: '+1.000', label: 'filas ordenadas por análisis' },
+  { value: 'Privado', label: 'tus planillas no se comparten' },
 ];
 
 export type Feature = {
@@ -47,27 +51,27 @@ export type Feature = {
 export const FEATURES: Feature[] = [
   {
     icon: Upload,
-    title: 'Cargá tu Excel',
+    title: 'Cargá tus planillas',
     description:
-      'Arrastrá tus planillas tal cual las tenés. Sin integraciones, sin migrar de sistema.',
+      'Arrastrá tus Excel de producción tal cual los tenés. Sin integraciones ni migrar de sistema.',
   },
   {
     icon: Brain,
-    title: 'La IA las analiza',
+    title: 'La IA las ordena',
     description:
-      'Detecta patrones, ineficiencias y fugas de costo que pasan desapercibidas a simple vista.',
+      'Unifica fechas, estados y horarios cargados de mil formas distintas, y cruza una planilla con otra.',
   },
   {
     icon: Lightbulb,
-    title: 'Recibí oportunidades',
+    title: 'Encontrá dónde se traba',
     description:
-      'Acciones concretas, priorizadas por impacto y con el ahorro mensual estimado de cada una.',
+      'Detecta estaciones lentas, retrabajos y faltas que te comen tiempo, priorizados por impacto.',
   },
   {
     icon: TrendingUp,
-    title: 'Medí el impacto',
+    title: 'Seguí la mejora',
     description:
-      'Seguí la evolución de tu eficiencia y tus costos en un dashboard claro y accionable.',
+      'Mirá la evolución de tu eficiencia y tus tiempos en un tablero claro y accionable.',
   },
 ];
 
@@ -80,35 +84,35 @@ export type Step = {
 export const STEPS: Step[] = [
   {
     icon: FileSpreadsheet,
-    title: 'Subí tu archivo',
+    title: 'Subí tus archivos',
     description:
-      'Formatos .xlsx, .xls o .csv. Tu información se procesa de forma privada.',
+      'Formatos .xlsx, .xls o .csv. Podés subir varias planillas juntas y se procesan de forma privada.',
   },
   {
     icon: Wand,
     title: 'La IA procesa los datos',
     description:
-      'En segundos cruza tus métricas y compara contra patrones del sector.',
+      'En segundos ordena tus columnas y cruza tu producción con la asistencia de la planta.',
   },
   {
     icon: TrendingUp,
     title: 'Aplicá las mejoras',
     description:
-      'Obtené un panel con las oportunidades de mayor impacto, listas para ejecutar.',
+      'Obtené un tablero con las oportunidades de mayor impacto, listas para ejecutar.',
   },
 ];
 
 export const TESTIMONIAL = {
   quote:
-    'En la primera semana detectamos que estábamos comprando el mismo insumo a cuatro proveedores distintos. Consolidar nos ahorró más de lo que esperábamos del mes.',
-  author: 'María Fernández',
-  role: 'Dueña',
-  company: 'Distribuidora del Sur',
+    'En la primera semana vimos que la estación de soldadura nos comía el doble de tiempo que el resto. Reordenamos los turnos ahí y las órdenes empezaron a salir a horario.',
+  author: 'Jorge Medina',
+  role: 'Jefe de planta',
+  company: 'Metalúrgica del Litoral',
 } as const;
 
 export const FINAL_CTA = {
-  title: 'Descubrí cuánto podés ahorrar este mes',
+  title: 'Mirá tu producción con claridad',
   subtitle:
-    'Explorá un análisis de ejemplo y mirá cómo se ven las oportunidades de mejora sobre datos reales de una PyME.',
-  cta: 'Abrir el dashboard',
+    'Explorá un análisis de ejemplo y mirá cómo se ven las oportunidades de mejora sobre datos reales de una planta.',
+  cta: 'Analizá tus planillas',
 } as const;

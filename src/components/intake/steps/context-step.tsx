@@ -72,7 +72,7 @@ export function ContextStep({ answers, onPatch, disabled }: ContextStepProps) {
           id="products"
           value={answers.products ?? ''}
           onChange={(e) => onPatch({ products: e.target.value })}
-          placeholder="Ej.: muebles de melamina, sillas y mesas a medida"
+          placeholder="Ej.: puertas y portones metálicos a medida"
           rows={2}
           maxLength={300}
           disabled={disabled}
@@ -88,7 +88,7 @@ export function ContextStep({ answers, onPatch, disabled }: ContextStepProps) {
           inputMode="numeric"
           value={answers.employees ?? ''}
           onChange={(e) => setEmployees(e.target.value)}
-          placeholder="Ej.: 12"
+          placeholder="Ej.: 7"
           disabled={disabled}
           className="sm:max-w-40"
         />
@@ -114,7 +114,7 @@ export function ContextStep({ answers, onPatch, disabled }: ContextStepProps) {
                   id={`resource-${index}-name`}
                   value={resource.name}
                   onChange={(e) => updateResource(index, { name: e.target.value })}
-                  placeholder="Ej.: Melamina"
+                  placeholder="Ej.: Chapa"
                   disabled={disabled}
                 />
               </div>
@@ -124,7 +124,7 @@ export function ContextStep({ answers, onPatch, disabled }: ContextStepProps) {
                   id={`resource-${index}-use`}
                   value={resource.use}
                   onChange={(e) => updateResource(index, { use: e.target.value })}
-                  placeholder="Ej.: Cuerpos y estantes"
+                  placeholder="Ej.: Hojas y marcos"
                   disabled={disabled}
                 />
               </div>
@@ -177,7 +177,7 @@ export function ContextStep({ answers, onPatch, disabled }: ContextStepProps) {
                 id={`process-${index}`}
                 value={process}
                 onChange={(e) => updateProcess(index, e.target.value)}
-                placeholder="Ej.: corte de melamina"
+                placeholder="Ej.: Corte, Plegado, Soldado, Lijado, Armado final"
                 disabled={disabled}
               />
               {processes.length > 1 ? (

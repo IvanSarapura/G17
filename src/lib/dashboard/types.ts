@@ -46,7 +46,8 @@ export type Metric = z.infer<typeof MetricSchema>;
 export const TrendPointSchema = z.object({
   period: z.string(),
   eficiencia: z.number(),
-  costo: z.number(),
+  /** Tiempo promedio por pieza, en minutos. */
+  tiempo: z.number(),
 });
 export type TrendPoint = z.infer<typeof TrendPointSchema>;
 
@@ -60,19 +61,53 @@ export const InsightSchema = z.object({
   title: z.string(),
   detail: z.string(),
   impact: ImpactSchema,
-  /** Ahorro mensual estimado, en la moneda del negocio. */
-  estimatedSaving: z.number(),
+  /** Ganancia operativa esperada, en términos llanos (p.ej. "−25% tiempo por orden"). */
+  expectedGain: z.string().optional(),
   /** A qué métrica afecta principalmente (id de Metric). */
   relatedMetric: z.string(),
 });
 export type Insight = z.infer<typeof InsightSchema>;
 
+/** Lectura de la IA de una planilla cargada (para la pantalla de confirmación). */
+export const FileInterpretationSchema = z.object({
+  fileName: z.string(),
+  /** Tipo de planilla detectado, p.ej. "Avance de producción por pieza". */
+  kind: z.string(),
+  rows: z.number(),
+  /** Columnas detectadas y normalizadas. */
+  columns: z.array(z.string()),
+});
+export type FileInterpretation = z.infer<typeof FileInterpretationSchema>;
+
+/** Un dato clave detectado cruzando las planillas (label → valor legible). */
+export const DetectedEntitySchema = z.object({
+  label: z.string(),
+  value: z.string(),
+});
+export type DetectedEntity = z.infer<typeof DetectedEntitySchema>;
+
+/**
+ * Lo que la IA entendió de las planillas, para que el usuario lo confirme antes
+ * de ver el tablero. Acompaña al `AnalysisResult` (mismo contrato mock/backend).
+ */
+export const InterpretationSchema = z.object({
+  files: z.array(FileInterpretationSchema).min(1),
+  /** Entidades detectadas (estaciones, operarios, turnos, órdenes…). */
+  entities: z.array(DetectedEntitySchema),
+  /** Normalizaciones aplicadas a datos cargados de forma inconsistente. */
+  normalizations: z.array(z.string()),
+  /** Rango temporal cubierto, p.ej. "Oct – Nov 2024". */
+  period: z.string().optional(),
+});
+export type Interpretation = z.infer<typeof InterpretationSchema>;
+
 /** Metadatos del análisis ejecutado. */
 export const AnalysisMetaSchema = z.object({
-  fileName: z.string(),
+  /** Nombres de las planillas procesadas (una o varias). */
+  files: z.array(z.string()).min(1),
   /** Fecha ISO 8601 del análisis. */
   analyzedAt: z.string(),
-  /** Filas procesadas del Excel. */
+  /** Filas procesadas en total. */
   rows: z.number(),
 });
 export type AnalysisMeta = z.infer<typeof AnalysisMetaSchema>;
@@ -144,6 +179,8 @@ export const AnalysisContextSchema = z.object({
   processes: z.array(z.string()).optional(),
   // Compartido (Guiado + Chat)
   dataKind: DataKindSchema.optional(),
+  /** Aclaración libre cuando se elige "Prefiero aclarar" (dataKind = 'mixto'). */
+  dataKindDetail: z.string().max(200).optional(),
   /** Card de texto opcional del paso "¿Qué contiene tu planilla?". */
   dataKindNotes: z.string().max(500).optional(),
   // Solo modo Chat (se mantienen por compatibilidad).
@@ -156,7 +193,7 @@ export const AnalysisContextSchema = z.object({
 export type AnalysisContext = z.infer<typeof AnalysisContextSchema>;
 
 /** Pedido de análisis en el borde de la llamada (el File no es serializable). */
-export type AnalysisRequest = { file: File; context: AnalysisContext };
+export type AnalysisRequest = { files: File[]; context: AnalysisContext };
 
 /** Resultado completo del análisis: lo que pinta el dashboard. */
 export const AnalysisResultSchema = z.object({
@@ -164,6 +201,8 @@ export const AnalysisResultSchema = z.object({
   metrics: z.array(MetricSchema).length(2),
   trend: z.array(TrendPointSchema).min(2),
   insights: z.array(InsightSchema),
+  /** Lectura de la IA de las planillas, para la pantalla de confirmación previa. */
+  interpretation: InterpretationSchema,
   meta: AnalysisMetaSchema,
 });
 export type AnalysisResult = z.infer<typeof AnalysisResultSchema>;

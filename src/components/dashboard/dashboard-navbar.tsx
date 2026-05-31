@@ -18,9 +18,9 @@ import {
 
 /** Cuenta de demostración (mock). */
 const ACCOUNT = {
-  name: 'María Fernández',
-  company: 'Distribuidora del Sur',
-  initials: 'MF',
+  name: 'Jorge Medina',
+  company: 'Jefe de planta',
+  initials: 'JM',
 } as const;
 
 export function DashboardNavbar() {
@@ -43,7 +43,7 @@ export function DashboardNavbar() {
           <Button asChild size="sm">
             <Link href="/analizar">
               <UploadCloud className="size-4" />
-              <span className="hidden sm:inline">Subir Excel</span>
+              <span className="hidden sm:inline">Subir planillas</span>
             </Link>
           </Button>
           <ThemeToggle />

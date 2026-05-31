@@ -4,14 +4,14 @@ import * as React from 'react';
 import { Loader2, Sparkles } from 'lucide-react';
 
 const MESSAGES = [
-  'Leyendo tu planilla…',
-  'Identificando tus columnas…',
-  'Calculando tus indicadores…',
-  'Detectando oportunidades de ahorro…',
+  'Leyendo tus planillas…',
+  'Normalizando fechas y estados…',
+  'Cruzando producción con asistencia…',
+  'Detectando cuellos de botella…',
   'Armando tu tablero…',
 ] as const;
 
-export function IntakeProcessing({ fileName }: { fileName: string }) {
+export function IntakeProcessing({ summary }: { summary: string }) {
   const [index, setIndex] = React.useState(0);
 
   React.useEffect(() => {
@@ -34,7 +34,7 @@ export function IntakeProcessing({ fileName }: { fileName: string }) {
         </p>
       </div>
       <p className="max-w-xs truncate text-xs text-muted-foreground">
-        {fileName}
+        {summary}
       </p>
     </div>
   );

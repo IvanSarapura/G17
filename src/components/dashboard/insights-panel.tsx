@@ -11,7 +11,6 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { formatSaving } from '@/lib/dashboard/format';
 import type { Impact, Insight } from '@/lib/dashboard/types';
 
 const IMPACT_STYLES: Record<Impact, string> = {
@@ -27,7 +26,7 @@ const IMPACT_LABEL: Record<Impact, string> = {
 };
 
 export function InsightsPanel({ insights }: { insights: Insight[] }) {
-  const totalSaving = insights.reduce((sum, i) => sum + i.estimatedSaving, 0);
+  const highImpact = insights.filter((i) => i.impact === 'alto').length;
 
   return (
     <Card className="gap-0 overflow-hidden">
@@ -41,9 +40,11 @@ export function InsightsPanel({ insights }: { insights: Insight[] }) {
         </CardDescription>
         <div className="col-start-1 mt-3 flex items-center gap-2 rounded-lg bg-emerald-600/10 px-3 py-2 text-sm">
           <TrendingUp className="size-4 text-emerald-600 dark:text-emerald-400" />
-          <span className="text-muted-foreground">Ahorro potencial mensual</span>
+          <span className="text-muted-foreground">
+            Mejoras de alto impacto
+          </span>
           <span className="ml-auto font-semibold text-emerald-700 tabular-nums dark:text-emerald-400">
-            {formatSaving(totalSaving)}
+            {highImpact}
           </span>
         </div>
       </CardHeader>
@@ -65,9 +66,11 @@ export function InsightsPanel({ insights }: { insights: Insight[] }) {
                   <p className="text-sm text-muted-foreground">
                     {insight.detail}
                   </p>
-                  <p className="text-xs font-medium text-emerald-700 tabular-nums dark:text-emerald-400">
-                    Ahorro estimado: {formatSaving(insight.estimatedSaving)}/mes
-                  </p>
+                  {insight.expectedGain ? (
+                    <p className="text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                      Ganancia esperada: {insight.expectedGain}
+                    </p>
+                  ) : null}
                 </article>
               </li>
             ))}

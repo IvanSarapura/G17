@@ -30,7 +30,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <Button asChild size="sm">
-            <Link href="/analizar">Analizá tu Excel</Link>
+            <Link href="/analizar">Analizá tus planillas</Link>
           </Button>
         </div>
       </div>

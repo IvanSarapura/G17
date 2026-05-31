@@ -79,13 +79,21 @@ export function DashboardShell() {
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Último análisis
             </CardTitle>
-            <CardDescription>Resumen del archivo procesado</CardDescription>
+            <CardDescription>
+              {data.meta.files.length > 1
+                ? 'Resumen de las planillas procesadas'
+                : 'Resumen de la planilla procesada'}
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2.5 text-sm">
-            <div className="flex items-center gap-2">
-              <FileSpreadsheet className="size-4 text-muted-foreground" />
-              <span className="truncate font-medium">{data.meta.fileName}</span>
-            </div>
+            <ul className="flex flex-col gap-1.5">
+              {data.meta.files.map((name) => (
+                <li key={name} className="flex items-center gap-2">
+                  <FileSpreadsheet className="size-4 shrink-0 text-muted-foreground" />
+                  <span className="truncate font-medium">{name}</span>
+                </li>
+              ))}
+            </ul>
             <Separator />
             <div className="flex items-center justify-between text-muted-foreground">
               <span className="flex items-center gap-2">
@@ -110,7 +118,7 @@ export function DashboardShell() {
           <CardHeader>
             <CardTitle>Tendencia operativa</CardTitle>
             <CardDescription>
-              Eficiencia vs. costo en los últimos meses
+              Eficiencia vs. tiempo por pieza en las últimas semanas
             </CardDescription>
           </CardHeader>
           <CardContent className="h-[300px] sm:h-[340px]">

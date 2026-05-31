@@ -1,9 +1,10 @@
 'use client';
 
 import * as React from 'react';
-import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, PencilLine, Sparkles } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import type { AnalysisContext, DataKind } from '@/lib/dashboard/types';
@@ -15,9 +16,9 @@ import { ContextStep } from './steps/context-step';
 import { ShiftsStep } from './steps/shifts-step';
 
 type GuidedFormProps = {
-  file: File | null;
+  files: File[];
   answers: Partial<AnalysisContext>;
-  onFileChange: (file: File | null) => void;
+  onFilesChange: (files: File[]) => void;
   onPatch: (patch: Partial<AnalysisContext>) => void;
   onSubmit: () => void;
   disabled?: boolean;
@@ -32,10 +33,10 @@ const STEP_NOTES = 4;
 const TOTAL_STEPS = 5;
 
 const STEP_LABELS = [
-  'Subí tu planilla',
+  'Subí tus planillas',
   'Turnos de producción',
   'Contame sobre tu planta',
-  '¿Qué contiene tu planilla?',
+  '¿Qué contienen tus planillas?',
   NOTES_STEP.title,
 ];
 
@@ -43,9 +44,9 @@ const STEP_LABELS = [
 const dataKindQuestion = QUESTIONS.find((q) => q.id === 'dataKind')!;
 
 export function GuidedForm({
-  file,
+  files,
   answers,
-  onFileChange,
+  onFilesChange,
   onPatch,
   onSubmit,
   disabled,
@@ -57,13 +58,16 @@ export function GuidedForm({
 
   const canAdvance =
     step === STEP_UPLOAD
-      ? Boolean(file)
+      ? files.length > 0
       : step === STEP_SHIFTS
         ? shiftsValid
         : step === STEP_CONTEXT
           ? Boolean(answers.products?.trim())
           : step === STEP_DATAKIND
-            ? Boolean(answers.dataKind)
+            ? Boolean(answers.dataKind) &&
+              // Si eligió "Prefiero aclarar", pedimos la aclaración para avanzar.
+              (answers.dataKind !== 'mixto' ||
+                Boolean(answers.dataKindDetail?.trim()))
             : true; // la nota es opcional
 
   const isLastStep = step === STEP_NOTES;
@@ -84,10 +88,14 @@ export function GuidedForm({
         {step === STEP_UPLOAD ? (
           <div className="flex flex-col gap-2">
             <p className="text-sm text-muted-foreground">
-              Subí tu Excel o CSV. No importa cómo lo tengas armado: la IA lo
-              interpreta.
+              Subí tus Excel o CSV (producción, asistencia, lo que tengas). No
+              importa cómo los tengas armados: la IA los interpreta.
             </p>
-            <FileDropzone file={file} onSelect={onFileChange} disabled={disabled} />
+            <FileDropzone
+              files={files}
+              onSelect={onFilesChange}
+              disabled={disabled}
+            />
           </div>
         ) : null}
 
@@ -126,6 +134,25 @@ export function GuidedForm({
                 />
               ))}
             </div>
+
+            {answers.dataKind === 'mixto' ? (
+              <div className="flex flex-col gap-2 rounded-lg border border-primary/30 bg-primary/5 p-3">
+                <Label htmlFor="dataKindDetail" className="text-primary">
+                  <PencilLine className="size-4" />
+                  Contanos qué contienen tus planillas
+                </Label>
+                <Input
+                  id="dataKindDetail"
+                  value={answers.dataKindDetail ?? ''}
+                  onChange={(e) => onPatch({ dataKindDetail: e.target.value })}
+                  placeholder="Ej.: avance de producción y asistencia, en planillas separadas"
+                  maxLength={200}
+                  disabled={disabled}
+                  className="bg-background"
+                />
+              </div>
+            ) : null}
+
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="dataKindNotes">
                 ¿Algo más sobre tus planillas? (opcional)

@@ -102,7 +102,7 @@ export default function Home() {
               De la planilla a la acción
             </h2>
             <p className="mt-3 text-muted-foreground">
-              Todo lo que necesita una PyME para encontrar y aprovechar
+              Todo lo que necesita tu planta para encontrar y aprovechar
               oportunidades de mejora, sin equipo de datos.
             </p>
           </div>

@@ -2,7 +2,6 @@ import { Lightbulb } from 'lucide-react';
 
 import { MetricCard } from '@/components/dashboard/metric-card';
 import { getMockAnalysis } from '@/lib/dashboard/mock';
-import { formatSaving } from '@/lib/dashboard/format';
 
 const ACCENTS = ['var(--chart-1)', 'var(--chart-2)'] as const;
 
@@ -13,10 +12,6 @@ const ACCENTS = ['var(--chart-1)', 'var(--chart-2)'] as const;
  */
 export function HeroPreview() {
   const analysis = getMockAnalysis();
-  const totalSaving = analysis.insights.reduce(
-    (sum, i) => sum + i.estimatedSaving,
-    0,
-  );
   const topInsight = analysis.insights[0];
 
   return (
@@ -50,9 +45,11 @@ export function HeroPreview() {
             <Lightbulb className="mt-0.5 size-4 shrink-0 text-amber-500" />
             <div className="min-w-0">
               <p className="truncate text-sm font-medium">{topInsight.title}</p>
-              <p className="text-xs font-medium text-emerald-700 dark:text-emerald-400">
-                Ahorro potencial: {formatSaving(totalSaving)}/mes
-              </p>
+              {topInsight.expectedGain ? (
+                <p className="text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                  Ganancia esperada: {topInsight.expectedGain}
+                </p>
+              ) : null}
             </div>
           </div>
         </div>
@@ -61,4 +58,4 @@ export function HeroPreview() {
   );
 }
 
-const PRODUCT_PATH = 'optimia.app/dashboard';
+const PRODUCT_PATH = 'lupia.app/dashboard';

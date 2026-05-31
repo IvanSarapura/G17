@@ -6,6 +6,7 @@ import {
   Factory,
   Gauge,
   Package,
+  PencilLine,
   ShoppingCart,
   Store,
   TrendingUp,
@@ -86,7 +87,7 @@ export const QUESTIONS: Question[] = [
       { value: 'costos', label: 'Costos', description: 'Gastos, compras', icon: DollarSign },
       { value: 'produccion', label: 'Producción', description: 'Unidades, tiempos', icon: Factory },
       { value: 'inventario', label: 'Inventario', description: 'Stock, depósito', icon: Package },
-      { value: 'mixto', label: 'Mixto', description: 'Un poco de todo', icon: Boxes },
+      { value: 'mixto', label: 'Prefiero aclarar', description: 'Te lo cuento en una línea', icon: PencilLine },
     ],
   },
   {
@@ -110,9 +111,9 @@ export const NOTES_STEP = {
   subtitle: 'Opcional. Por ejemplo: "fijate por qué subió el costo en marzo".',
   placeholder: 'Escribí acá lo que quieras… (opcional)',
   examples: [
-    'Quiero saber dónde estoy perdiendo plata',
-    '¿Qué meses fueron los peores?',
-    'Compará este año con el anterior',
+    '¿Dónde se traba la producción?',
+    '¿Qué estación es el cuello de botella?',
+    '¿Quién falta más seguido?',
   ],
 } as const;
 

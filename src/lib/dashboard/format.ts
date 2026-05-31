@@ -29,8 +29,3 @@ export function formatDelta(delta: number): string {
   const sign = delta > 0 ? '+' : '';
   return `${sign}${percent.format(delta)}%`;
 }
-
-/** Formatea un ahorro estimado mensual como moneda. */
-export function formatSaving(value: number): string {
-  return currency.format(value);
-}

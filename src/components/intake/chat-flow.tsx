@@ -15,9 +15,9 @@ import {
 import { FileDropzone } from './file-dropzone';
 
 type ChatFlowProps = {
-  file: File | null;
+  files: File[];
   answers: Partial<AnalysisContext>;
-  onFileChange: (file: File | null) => void;
+  onFilesChange: (files: File[]) => void;
   onAnswer: (field: keyof AnalysisContext, value: string) => void;
   onSubmit: () => void;
   disabled?: boolean;
@@ -58,9 +58,9 @@ function Bubble({
 }
 
 export function ChatFlow({
-  file,
+  files,
   answers,
-  onFileChange,
+  onFilesChange,
   onAnswer,
   onSubmit,
   disabled,
@@ -73,9 +73,9 @@ export function ChatFlow({
     bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, [stage]);
 
-  function handleFile(next: File | null) {
-    onFileChange(next);
-    if (next) setStage((s) => Math.max(s, STAGE_UPLOAD + 1));
+  function handleFiles(next: File[]) {
+    onFilesChange(next);
+    if (next.length > 0) setStage((s) => Math.max(s, STAGE_UPLOAD + 1));
   }
 
   function handleChoice(field: keyof AnalysisContext, value: string) {
@@ -93,14 +93,20 @@ export function ChatFlow({
       <div className="flex max-h-[52vh] min-h-[320px] flex-col gap-4 overflow-y-auto pr-1">
         <Bubble from="ai">
           ¡Hola! Soy tu asistente. Te hago unas preguntas cortas y armo tu
-          tablero. Para empezar, subí tu planilla. 👇
+          tablero. Para empezar, subí tus planillas. 👇
         </Bubble>
 
-        {/* Subida del archivo */}
+        {/* Subida de las planillas */}
         {stage === STAGE_UPLOAD ? (
-          <FileDropzone file={file} onSelect={handleFile} disabled={disabled} />
-        ) : file ? (
-          <Bubble from="user">📄 {file.name}</Bubble>
+          <FileDropzone
+            files={files}
+            onSelect={handleFiles}
+            disabled={disabled}
+          />
+        ) : files.length > 0 ? (
+          <Bubble from="user">
+            📄 {files.map((f) => f.name).join(', ')}
+          </Bubble>
         ) : null}
 
         {/* Preguntas guiadas, una a una */}

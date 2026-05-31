@@ -23,12 +23,13 @@ export function isAcceptedFile(fileName: string): boolean {
  * rompe el multipart.
  */
 export async function uploadAnalysis(
-  file: File,
+  files: File[],
   context: AnalysisContext,
 ): Promise<AnalysisResult> {
   const body = new FormData();
-  body.append('file', file);
-  // Las respuestas guiadas viajan junto al archivo para orientar a la IA.
+  // Una o varias planillas (p.ej. producción + asistencia) viajan juntas.
+  files.forEach((file) => body.append('files', file));
+  // Las respuestas guiadas viajan junto a los archivos para orientar a la IA.
   body.append('context', JSON.stringify(context));
 
   const res = await fetch(`${env.NEXT_PUBLIC_API_URL}/analyze`, {
@@ -57,11 +58,11 @@ export async function uploadAnalysis(
  * la firma para que activar `uploadAnalysis` en Fase 3 no requiera tocar la UI.
  */
 export async function simulateAnalysis(
-  file: File,
+  files: File[],
   _context: AnalysisContext,
 ): Promise<AnalysisResult> {
   await new Promise((resolve) => setTimeout(resolve, 1400));
-  return getMockAnalysis(file.name);
+  return getMockAnalysis(files.map((f) => f.name));
 }
 
 /**

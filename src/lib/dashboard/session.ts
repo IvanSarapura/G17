@@ -7,7 +7,7 @@ import { AnalysisResultSchema, type AnalysisResult } from './types';
  * sobrevive a un refresh dentro de la misma pestaña. La lectura se valida con
  * el mismo contrato del dashboard, así nunca confiamos en datos crudos.
  */
-const KEY = 'optimia:last-analysis';
+const KEY = 'lupia:last-analysis';
 
 const hasStorage = (): boolean =>
   typeof window !== 'undefined' && 'sessionStorage' in window;

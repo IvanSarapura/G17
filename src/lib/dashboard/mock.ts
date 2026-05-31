@@ -1,100 +1,183 @@
 import { AnalysisResultSchema, type AnalysisResult } from './types';
 
-const PERIODS = ['Dic', 'Ene', 'Feb', 'Mar', 'Abr', 'May'] as const;
+const PERIODS = ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6'] as const;
 
-const EFICIENCIA = [71, 73, 72, 76, 79, 82];
-const COSTO = [48200, 47100, 47800, 45300, 43900, 42100];
+// % de piezas OK sobre el total producido en la semana.
+const EFICIENCIA = [84, 86, 85, 88, 90, 91];
+// Tiempo promedio por pieza (min), sumando todas las estaciones.
+const TIEMPO = [29, 28, 28, 25, 24, 22];
 
 /**
  * Datos de ejemplo que cumplen `AnalysisResultSchema`.
  *
- * Genéricos a propósito (placeholders) para iterar el diseño. En Fase 3 se
- * reemplaza por la respuesta real del endpoint de IA, que cumple el mismo
- * esquema, así que la UI no cambia.
+ * Operativos a propósito (sin pesos): reflejan el tipo de planillas de
+ * producción que sube el usuario (avance por pieza/estación + asistencia). En
+ * Fase 3 se reemplaza por la respuesta real del endpoint de IA, que cumple el
+ * mismo esquema, así que la UI no cambia.
  */
 const MOCK_ANALYSIS: AnalysisResult = {
   metrics: [
     {
       id: 'eficiencia',
-      label: 'Eficiencia operativa',
+      label: 'Eficiencia de producción',
       value: EFICIENCIA[EFICIENCIA.length - 1],
       unit: 'percent',
-      delta: 3.8,
+      delta: 3.4,
       trend: 'up',
       goodWhen: 'up',
       series: PERIODS.map((period, i) => ({ period, value: EFICIENCIA[i] })),
-      hint: 'Producción real sobre capacidad instalada',
+      hint: 'Piezas OK sobre el total producido',
     },
     {
-      id: 'costo',
-      label: 'Costo operativo mensual',
-      value: COSTO[COSTO.length - 1],
-      unit: 'currency',
-      delta: -4.1,
+      id: 'tiempo',
+      label: 'Tiempo promedio por pieza',
+      value: TIEMPO[TIEMPO.length - 1],
+      unit: 'number',
+      delta: -8.3,
       trend: 'down',
       goodWhen: 'down',
-      series: PERIODS.map((period, i) => ({ period, value: COSTO[i] })),
-      hint: 'Suma de costos directos e indirectos del mes',
+      series: PERIODS.map((period, i) => ({ period, value: TIEMPO[i] })),
+      hint: 'Minutos promedio sumando las 5 estaciones',
     },
   ],
   trend: PERIODS.map((period, i) => ({
     period,
     eficiencia: EFICIENCIA[i],
-    costo: COSTO[i],
+    tiempo: TIEMPO[i],
   })),
   insights: [
     {
-      id: 'turnos',
-      title: 'Reorganizar turnos en planta',
+      id: 'cuello-soldado',
+      title: 'Cuello de botella en Soldado',
       detail:
-        'Los martes y jueves concentran 38% de las horas ociosas. Redistribuir la carga elevaría la eficiencia ~5 puntos sin contratar personal.',
+        'Soldado promedia 70 min por pieza, contra 8–20 min del resto de las estaciones. Concentra cerca del 60% del tiempo de cada orden y frena el avance hacia Armado final.',
       impact: 'alto',
-      estimatedSaving: 6200,
+      expectedGain: '−25% tiempo por orden',
+      relatedMetric: 'tiempo',
+    },
+    {
+      id: 'retrabajos',
+      title: 'Retrabajos concentrados en Lijado y Soldado',
+      detail:
+        '1 de cada 12 piezas vuelve a proceso (estados "retrabajo" / "rehacer"), sobre todo en Lijado y Soldado. Estandarizar el control al cierre de cada etapa reduce los reprocesos.',
+      impact: 'alto',
+      expectedGain: '−40% reprocesos',
       relatedMetric: 'eficiencia',
     },
     {
-      id: 'proveedor',
-      title: 'Consolidar compras de insumos',
+      id: 'ausentismo',
+      title: 'Ausentismo en el turno Mañana',
       detail:
-        'Se detectaron 4 proveedores para el mismo insumo con precios dispares. Consolidar en el más competitivo reduce el costo unitario un 9%.',
-      impact: 'alto',
-      estimatedSaving: 3100,
-      relatedMetric: 'costo',
-    },
-    {
-      id: 'merma',
-      title: 'Controlar merma de materia prima',
-      detail:
-        'La merma supera el promedio del sector (7,4% vs. 4,5%). Un control de inventario semanal recuperaría parte de esa pérdida.',
+        'Las faltas (incluidas las injustificadas) se concentran en el sector Soldado durante el turno Mañana, justo donde está el cuello de botella. Reforzar ese turno sostiene el ritmo.',
       impact: 'medio',
-      estimatedSaving: 1800,
-      relatedMetric: 'costo',
+      expectedGain: '+3% asistencia',
+      relatedMetric: 'eficiencia',
     },
     {
-      id: 'mantenimiento',
-      title: 'Mantenimiento preventivo de equipos',
+      id: 'horas-extra',
+      title: 'Horas extra recurrentes en Soldado',
       detail:
-        'Las paradas no planificadas explican 12% del tiempo perdido. Un plan preventivo mensual reduce las fallas inesperadas.',
+        'El sobretiempo se repite semana a semana en Soldado para compensar el atraso. Balancear la carga entre los turnos Mañana y Tarde evitaría buena parte de esas horas extra.',
+      impact: 'medio',
+      expectedGain: '−1 turno extra/semana',
+      relatedMetric: 'tiempo',
+    },
+    {
+      id: 'datos-mezclados',
+      title: 'Planillas cargadas con formatos mezclados',
+      detail:
+        'Las fechas, los estados y los horarios vienen en varios formatos distintos. La IA ya los normalizó para este análisis; unificarlos en origen agilizaría las próximas cargas.',
       impact: 'bajo',
-      estimatedSaving: 950,
+      expectedGain: 'cargas más limpias',
       relatedMetric: 'eficiencia',
     },
   ],
+  interpretation: {
+    files: [],
+    entities: [
+      { label: 'Estaciones', value: 'Corte, Plegado, Soldado, Lijado, Armado final' },
+      { label: 'Operarios', value: '7 operarios' },
+      { label: 'Turnos', value: 'Mañana y Tarde' },
+      { label: 'Órdenes de producción', value: '63 (OP-301 a OP-360)' },
+      { label: 'Período', value: 'Oct – Nov 2024' },
+    ],
+    normalizations: [
+      'Unifiqué 5 formatos de fecha distintos (08-10-2024, 09/10/24, 2024-10-10…).',
+      'Agrupé 18 variantes de "Estado" en OK y Retrabajo (listo, pasa, term., rehacer…).',
+      'Normalicé los horarios cargados de 6 formas distintas (7.26, 15h13, 16:07…).',
+      'Unifiqué las horas extra ("1 hora", "1", "2") a un único formato numérico.',
+    ],
+    period: 'Oct – Nov 2024',
+  },
   meta: {
-    fileName: 'operaciones_2026.xlsx',
+    files: ['Avance_Produccion.csv', 'Asistencia_Horarios.csv'],
     analyzedAt: '2026-05-30T18:00:00.000Z',
-    rows: 1248,
+    rows: 1062,
   },
 };
 
 /**
- * Devuelve el análisis simulado, validado contra el esquema.
- * @param fileName opcional, para reflejar el archivo subido por el usuario.
+ * Plantillas de lectura por planilla (estructura detectada de los dos CSV de
+ * ejemplo). Se mapean por índice sobre los nombres reales que sube el usuario.
  */
-export function getMockAnalysis(fileName?: string): AnalysisResult {
-  const result: AnalysisResult = fileName
-    ? { ...MOCK_ANALYSIS, meta: { ...MOCK_ANALYSIS.meta, fileName } }
-    : MOCK_ANALYSIS;
+const FILE_TEMPLATES: ReadonlyArray<{ kind: string; rows: number; columns: string[] }> = [
+  {
+    kind: 'Avance de producción por pieza',
+    rows: 780,
+    columns: [
+      'Fecha',
+      'N° Orden',
+      'Pieza',
+      'Estación',
+      'Operario',
+      'Tiempo (min)',
+      'Cant. OK',
+      'Cant. rechazada',
+      'Estado',
+      'Turno',
+    ],
+  },
+  {
+    kind: 'Asistencia y horarios',
+    rows: 282,
+    columns: [
+      'Fecha',
+      'Operario',
+      'Sector',
+      'Entrada',
+      'Salida',
+      'Horas extra',
+      'Ausencia',
+      'Legajo',
+      'Categoría',
+    ],
+  },
+];
+
+/** Construye la lectura por archivo a partir de los nombres reales subidos. */
+function buildFileInterpretations(fileNames: string[]) {
+  return fileNames.map((fileName, i) => {
+    const template = FILE_TEMPLATES[i % FILE_TEMPLATES.length];
+    return { fileName, ...template };
+  });
+}
+
+/**
+ * Devuelve el análisis simulado, validado contra el esquema.
+ * @param fileNames opcional, para reflejar las planillas subidas por el usuario.
+ */
+export function getMockAnalysis(fileNames?: string[]): AnalysisResult {
+  const names =
+    fileNames && fileNames.length > 0 ? fileNames : MOCK_ANALYSIS.meta.files;
+
+  const files = buildFileInterpretations(names);
+  const rows = files.reduce((sum, f) => sum + f.rows, 0);
+
+  const result: AnalysisResult = {
+    ...MOCK_ANALYSIS,
+    interpretation: { ...MOCK_ANALYSIS.interpretation, files },
+    meta: { ...MOCK_ANALYSIS.meta, files: names, rows },
+  };
 
   // Falla ruidosamente en dev si el mock deja de cumplir el contrato.
   return AnalysisResultSchema.parse(result);

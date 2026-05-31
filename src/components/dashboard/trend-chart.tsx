@@ -21,13 +21,8 @@ import type { TrendPoint } from '@/lib/dashboard/types';
 
 const chartConfig = {
   eficiencia: { label: 'Eficiencia (%)', color: 'var(--chart-1)' },
-  costo: { label: 'Costo ($)', color: 'var(--chart-2)' },
+  tiempo: { label: 'Tiempo por pieza (min)', color: 'var(--chart-2)' },
 } satisfies ChartConfig;
-
-const compact = new Intl.NumberFormat('es-AR', {
-  notation: 'compact',
-  maximumFractionDigits: 1,
-});
 
 export function TrendChart({ data }: { data: TrendPoint[] }) {
   return (
@@ -58,19 +53,19 @@ export function TrendChart({ data }: { data: TrendPoint[] }) {
           tickFormatter={(v) => `${v}%`}
         />
         <YAxis
-          yAxisId="costo"
+          yAxisId="tiempo"
           orientation="right"
           tickLine={false}
           axisLine={false}
           width={48}
-          tickFormatter={(v) => `$${compact.format(v as number)}`}
+          tickFormatter={(v) => `${v} min`}
         />
         <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />
         <Bar
-          yAxisId="costo"
-          dataKey="costo"
-          fill="var(--color-costo)"
+          yAxisId="tiempo"
+          dataKey="tiempo"
+          fill="var(--color-tiempo)"
           radius={[4, 4, 0, 0]}
           barSize={28}
           isAnimationActive={false}
